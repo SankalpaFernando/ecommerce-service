@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  role Role @default(USER)
+  carts Cart[]
+  ratings Rating[]
+  favourites Favourite[]
+}
+
+model Category{
+  id Int @id @default(autoincrement())
+  name String @unique
+  products Product[]
+}
+
+model Product{
+  id Int @id @default(autoincrement())
+  name String
+  price Float
+  description String
+  image String
+  categoryId Int
+  category Category @relation(fields: [categoryId], references: [id])
+  carts Cart[]
+  ratings Rating[]
+  favourites Favourite[]
+}
+
+model Cart{
+  userId Int
+  productId Int
+  quantity Int
+  user User @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@id([userId, productId])
+}
+
+model Rating{
+  id Int @id @default(autoincrement())
+  userId Int
+  productId Int
+  rating Int
+  comment String?
+  user User @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Favourite{
+  userId Int
+  productId Int
+  user User @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  @@id([userId, productId])
+}
+
+enum Role {
+  ADMIN
+  USER
+  SUPERADMIN
+}
