@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { Roles } from 'src/role/role.decorator';
@@ -25,10 +25,9 @@ export class AuthController {
     );
   }
 
-  @Get('profile')
-  @Roles(Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
-  getProfile() {
-    return 'Profile';
+  @Post('authorized')
+  @UseGuards(AuthGuard)
+  getProfile(@Req() request: Request, @Query('roles') authorizedRoles: Role[]) {
+    return this.authService.isAuthorized(request['user'].role, authorizedRoles);
   }
 }

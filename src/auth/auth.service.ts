@@ -27,6 +27,17 @@ export class AuthService {
     };
   }
 
+  async isAuthorized(role: Role, authorizedRoles: Role[]) {
+    if (authorizedRoles.includes(role)) {
+      return {
+        allowed: true,
+      };
+    }
+    return {
+      allowed: false,
+    };
+  }
+
   async signIn(email, password) {
     const user = await this.userService.getUniqueUser({ email });
     if (!user) {
